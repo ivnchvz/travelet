@@ -39,7 +39,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>1.0.0</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSMinimumSystemVersion</key>
@@ -53,9 +53,21 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSFileProviderDomainUsageDescription</key>
+    <string>Allow Travelet to manage files for document storage</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow Travelet to access your photo library to select PDF files</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+    </array>
+    <key>UIDocumentPickerMode</key>
+    <array>
+      <string>import</string>
+    </array>
+    <key>UIDocumentPickerTypes</key>
+    <array>
+      <string>com.adobe.pdf</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
