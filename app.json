@@ -11,8 +11,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.wasserstiefel.travelet",
+      "buildNumber": "1.0.0",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Allow Travelet to access your photo library to select PDF files",
+        "NSFileProviderDomainUsageDescription": "Allow Travelet to manage files for document storage",
+        "UIDocumentPickerMode": ["import"],
+        "UIDocumentPickerTypes": ["com.adobe.pdf"]
       }
     },
     "android": {
@@ -20,6 +25,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.wasserstiefel.travelet",
+      "versionCode": 1,
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -37,6 +45,12 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "appleTeamId": "SK2YBWMZ3V"
+        }
       ]
     ],
     "experiments": {
@@ -47,6 +61,11 @@
       "eas": {
         "projectId": "53e2bd82-87a3-489f-b678-5ba2849ac54f"
       }
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     }
   }
 }

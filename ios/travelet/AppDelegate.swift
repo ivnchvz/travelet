@@ -1,6 +1,7 @@
 import Expo
 import React
 import ReactAppDependencyProvider
+import UniformTypeIdentifiers
 
 @UIApplicationMain
 public class AppDelegate: ExpoAppDelegate {
@@ -38,6 +39,19 @@ public class AppDelegate: ExpoAppDelegate {
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey: Any] = [:]
   ) -> Bool {
+    // Handle file imports
+    if url.startAccessingSecurityScopedResource() {
+      defer { url.stopAccessingSecurityScopedResource() }
+      do {
+        let fileData = try Data(contentsOf: url)
+        print("File successfully accessed: \(url.lastPathComponent), size: \(fileData.count) bytes")
+        // Process the file as needed
+      } catch {
+        print("Error accessing file: \(error.localizedDescription)")
+      }
+    } else {
+      print("Failed to access security-scoped resource for URL: \(url)")
+    }
     return super.application(app, open: url, options: options) || RCTLinkingManager.application(app, open: url, options: options)
   }
 

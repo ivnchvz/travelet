@@ -1,14 +1,5 @@
+import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
-
-// Conditional import for RNFS to avoid web issues
-let RNFS: any = null;
-if (Platform.OS !== 'web') {
-  try {
-    RNFS = require('react-native-fs').default;
-  } catch (error) {
-    console.warn('RNFS not available:', error);
-  }
-}
 
 export interface PDFDocument {
   id: string;
@@ -39,41 +30,27 @@ class PDFService {
     this.isWeb = Platform.OS === 'web';
     
     if (this.isWeb) {
-      // For web, we'll use localStorage as a fallback
       this.documentsDirectory = 'web-storage';
       this.categoriesFile = 'categories.json';
       this.initializeWebStorage();
     } else {
-      // Set up directories for different platforms
-      if (RNFS) {
-        if (Platform.OS === 'ios') {
-          this.documentsDirectory = RNFS.DocumentDirectoryPath + '/PDFs';
-        } else {
-          this.documentsDirectory = RNFS.ExternalDirectoryPath + '/PDFs';
-        }
-        this.categoriesFile = this.documentsDirectory + '/categories.json';
-        this.initializeDirectories();
-      } else {
-        // Fallback if RNFS is not available
-        this.documentsDirectory = 'fallback';
-        this.categoriesFile = 'categories.json';
-      }
+      this.documentsDirectory = `${FileSystem.documentDirectory}PDFs/`;
+      this.categoriesFile = `${this.documentsDirectory}categories.json`;
+      this.initializeDirectories();
     }
   }
 
   private async initializeDirectories() {
-    if (this.isWeb || !RNFS) return;
+    if (this.isWeb) return;
     
     try {
-      // Create PDFs directory if it doesn't exist
-      const exists = await RNFS.exists(this.documentsDirectory);
-      if (!exists) {
-        await RNFS.mkdir(this.documentsDirectory);
+      const dirInfo = await FileSystem.getInfoAsync(this.documentsDirectory);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(this.documentsDirectory, { intermediates: true });
       }
       
-      // Create categories file if it doesn't exist
-      const categoriesExist = await RNFS.exists(this.categoriesFile);
-      if (!categoriesExist) {
+      const categoriesExist = await FileSystem.getInfoAsync(this.categoriesFile);
+      if (!categoriesExist.exists) {
         await this.saveCategories(this.getDefaultCategories());
       }
     } catch (error) {
@@ -143,16 +120,12 @@ class PDFService {
         const stored = localStorage.getItem('travelet-categories');
         return stored ? JSON.parse(stored) : this.getDefaultCategories();
       } else {
-        if (!RNFS) {
+        const exists = await FileSystem.getInfoAsync(this.categoriesFile);
+        if (!exists.exists) {
           return this.getDefaultCategories();
         }
         
-        const exists = await RNFS.exists(this.categoriesFile);
-        if (!exists) {
-          return this.getDefaultCategories();
-        }
-        
-        const content = await RNFS.readFile(this.categoriesFile, 'utf8');
+        const content = await FileSystem.readAsStringAsync(this.categoriesFile, { encoding: FileSystem.EncodingType.UTF8 });
         return JSON.parse(content);
       }
     } catch (error) {
@@ -166,9 +139,7 @@ class PDFService {
       if (this.isWeb) {
         localStorage.setItem('travelet-categories', JSON.stringify(categories));
       } else {
-        if (RNFS) {
-          await RNFS.writeFile(this.categoriesFile, JSON.stringify(categories, null, 2), 'utf8');
-        }
+        await FileSystem.writeAsStringAsync(this.categoriesFile, JSON.stringify(categories, null, 2), { encoding: FileSystem.EncodingType.UTF8 });
       }
     } catch (error) {
       console.error('Error saving categories:', error);
@@ -191,7 +162,6 @@ class PDFService {
       }
 
       if (this.isWeb) {
-        // For web, we'll create a mock document since we can't store actual files
         const document: PDFDocument = {
           id: Date.now().toString(),
           name: originalName.replace(/\.pdf$/i, ''),
@@ -206,22 +176,24 @@ class PDFService {
         await this.saveCategories(categories);
         return document;
       } else {
-        if (!RNFS) {
-          throw new Error('File system not available');
+        // Verify file exists
+        const fileInfo = await FileSystem.getInfoAsync(filePath) as FileSystem.FileInfo & { size?: number };
+        if (!fileInfo.exists) {
+          throw new Error('File not found at specified path');
         }
-        
+
         // Generate unique filename
         const timestamp = Date.now();
         const extension = originalName.split('.').pop() || 'pdf';
         const fileName = `doc_${timestamp}.${extension}`;
-        const newFilePath = `${this.documentsDirectory}/${fileName}`;
+        const newFilePath = `${this.documentsDirectory}${fileName}`;
 
         // Copy file to app directory
-        await RNFS.copyFile(filePath, newFilePath);
+        await FileSystem.copyAsync({ from: filePath, to: newFilePath });
 
         // Get file stats
-        const stats = await RNFS.stat(newFilePath);
-        const fileSize = this.formatFileSize(stats.size);
+        const stats = await FileSystem.getInfoAsync(newFilePath) as FileSystem.FileInfo & { size?: number };
+        const fileSize = this.formatFileSize(stats.size || 0);
 
         // Create document object
         const document: PDFDocument = {
@@ -264,10 +236,10 @@ class PDFService {
 
       const document = category.documents[documentIndex];
       
-      if (!this.isWeb && RNFS) {
-        // Delete file from storage
-        if (await RNFS.exists(document.filePath)) {
-          await RNFS.unlink(document.filePath);
+      if (!this.isWeb) {
+        const fileInfo = await FileSystem.getInfoAsync(document.filePath);
+        if (fileInfo.exists) {
+          await FileSystem.deleteAsync(document.filePath);
         }
       }
 
@@ -343,11 +315,11 @@ class PDFService {
 
       const category = categories[categoryIndex];
       
-      if (!this.isWeb && RNFS) {
-        // Delete all documents in the category
+      if (!this.isWeb) {
         for (const document of category.documents) {
-          if (await RNFS.exists(document.filePath)) {
-            await RNFS.unlink(document.filePath);
+          const fileInfo = await FileSystem.getInfoAsync(document.filePath);
+          if (fileInfo.exists) {
+            await FileSystem.deleteAsync(document.filePath);
           }
         }
       }
