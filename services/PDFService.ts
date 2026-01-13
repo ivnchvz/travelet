@@ -24,31 +24,34 @@ export interface PDFCategory {
 class PDFService {
   private documentsDirectory: string;
   private categoriesFile: string;
+  private declareFile: string;
   private isWeb: boolean;
 
   constructor() {
     this.isWeb = Platform.OS === 'web';
-    
+
     if (this.isWeb) {
       this.documentsDirectory = 'web-storage';
       this.categoriesFile = 'categories.json';
+      this.declareFile = 'declareItems.json';
       this.initializeWebStorage();
     } else {
       this.documentsDirectory = `${FileSystem.documentDirectory}PDFs/`;
       this.categoriesFile = `${this.documentsDirectory}categories.json`;
+      this.declareFile = `${this.documentsDirectory}declare.json`;
       this.initializeDirectories();
     }
   }
 
   private async initializeDirectories() {
     if (this.isWeb) return;
-    
+
     try {
       const dirInfo = await FileSystem.getInfoAsync(this.documentsDirectory);
       if (!dirInfo.exists) {
         await FileSystem.makeDirectoryAsync(this.documentsDirectory, { intermediates: true });
       }
-      
+
       const categoriesExist = await FileSystem.getInfoAsync(this.categoriesFile);
       if (!categoriesExist.exists) {
         await this.saveCategories(this.getDefaultCategories());
@@ -59,8 +62,20 @@ class PDFService {
   }
 
   private initializeWebStorage() {
-    if (typeof window !== 'undefined' && !localStorage.getItem('travelet-categories')) {
-      localStorage.setItem('travelet-categories', JSON.stringify(this.getDefaultCategories()));
+    try {
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        const categories = localStorage.getItem('travelet-categories');
+        const items = localStorage.getItem('travelet-declare-items');
+
+        if (!categories) {
+          localStorage.setItem('travelet-categories', JSON.stringify(this.getDefaultCategories()));
+        }
+        if (!items) {
+          localStorage.setItem('travelet-declare-items', JSON.stringify([]));
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing web storage:', error);
     }
   }
 
@@ -117,14 +132,22 @@ class PDFService {
   async getCategories(): Promise<PDFCategory[]> {
     try {
       if (this.isWeb) {
-        const stored = localStorage.getItem('travelet-categories');
-        return stored ? JSON.parse(stored) : this.getDefaultCategories();
+        if (typeof localStorage !== 'undefined') {
+          try {
+            const stored = localStorage.getItem('travelet-categories');
+            return stored ? JSON.parse(stored) : this.getDefaultCategories();
+          } catch (e) {
+            console.error('Error reading from localStorage:', e);
+            return this.getDefaultCategories();
+          }
+        }
+        return this.getDefaultCategories();
       } else {
         const exists = await FileSystem.getInfoAsync(this.categoriesFile);
         if (!exists.exists) {
           return this.getDefaultCategories();
         }
-        
+
         const content = await FileSystem.readAsStringAsync(this.categoriesFile, { encoding: FileSystem.EncodingType.UTF8 });
         return JSON.parse(content);
       }
@@ -156,7 +179,7 @@ class PDFService {
     try {
       const categories = await this.getCategories();
       const category = categories.find(c => c.id === categoryId);
-      
+
       if (!category) {
         throw new Error('Category not found');
       }
@@ -208,10 +231,10 @@ class PDFService {
 
         // Add to category
         category.documents.push(document);
-        
+
         // Save updated categories
         await this.saveCategories(categories);
-        
+
         return document;
       }
     } catch (error) {
@@ -224,7 +247,7 @@ class PDFService {
     try {
       const categories = await this.getCategories();
       const category = categories.find(c => c.id === categoryId);
-      
+
       if (!category) {
         throw new Error('Category not found');
       }
@@ -235,7 +258,7 @@ class PDFService {
       }
 
       const document = category.documents[documentIndex];
-      
+
       if (!this.isWeb) {
         const fileInfo = await FileSystem.getInfoAsync(document.filePath);
         if (fileInfo.exists) {
@@ -245,7 +268,7 @@ class PDFService {
 
       // Remove from category
       category.documents.splice(documentIndex, 1);
-      
+
       // Save updated categories
       await this.saveCategories(categories);
     } catch (error) {
@@ -258,7 +281,7 @@ class PDFService {
     try {
       const categories = await this.getCategories();
       const category = categories.find(c => c.id === categoryId);
-      
+
       if (!category) {
         return null;
       }
@@ -272,18 +295,18 @@ class PDFService {
 
   private formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
   async addCategory(name: string, color: string, borderColor: string, accentColor: string, textColor: string): Promise<PDFCategory> {
     try {
       const categories = await this.getCategories();
-      
+
       const newCategory: PDFCategory = {
         id: `category_${Date.now()}`,
         name,
@@ -296,7 +319,7 @@ class PDFService {
 
       categories.push(newCategory);
       await this.saveCategories(categories);
-      
+
       return newCategory;
     } catch (error) {
       console.error('Error adding category:', error);
@@ -308,13 +331,13 @@ class PDFService {
     try {
       const categories = await this.getCategories();
       const categoryIndex = categories.findIndex(c => c.id === categoryId);
-      
+
       if (categoryIndex === -1) {
         throw new Error('Category not found');
       }
 
       const category = categories[categoryIndex];
-      
+
       if (!this.isWeb) {
         for (const document of category.documents) {
           const fileInfo = await FileSystem.getInfoAsync(document.filePath);
@@ -326,11 +349,52 @@ class PDFService {
 
       // Remove category
       categories.splice(categoryIndex, 1);
-      
+
       // Save updated categories
       await this.saveCategories(categories);
     } catch (error) {
       console.error('Error deleting category:', error);
+      throw error;
+    }
+  }
+
+  async getDeclareItems(): Promise<string[]> {
+    try {
+      if (this.isWeb) {
+        if (typeof localStorage !== 'undefined') {
+          try {
+            const stored = localStorage.getItem('travelet-declare-items');
+            return stored ? JSON.parse(stored) : [];
+          } catch (e) {
+            console.error('Error reading declare items from localStorage:', e);
+            return [];
+          }
+        }
+        return [];
+      } else {
+        const exists = await FileSystem.getInfoAsync(this.declareFile);
+        if (!exists.exists) {
+          return [];
+        }
+
+        const content = await FileSystem.readAsStringAsync(this.declareFile, { encoding: FileSystem.EncodingType.UTF8 });
+        return JSON.parse(content);
+      }
+    } catch (error) {
+      console.error('Error reading declare items:', error);
+      return [];
+    }
+  }
+
+  async saveDeclareItems(items: string[]): Promise<void> {
+    try {
+      if (this.isWeb) {
+        localStorage.setItem('travelet-declare-items', JSON.stringify(items));
+      } else {
+        await FileSystem.writeAsStringAsync(this.declareFile, JSON.stringify(items, null, 2), { encoding: FileSystem.EncodingType.UTF8 });
+      }
+    } catch (error) {
+      console.error('Error saving declare items:', error);
       throw error;
     }
   }

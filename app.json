@@ -16,8 +16,12 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Allow Travelet to access your photo library to select PDF files",
         "NSFileProviderDomainUsageDescription": "Allow Travelet to manage files for document storage",
-        "UIDocumentPickerMode": ["import"],
-        "UIDocumentPickerTypes": ["com.adobe.pdf"]
+        "UIDocumentPickerMode": [
+          "import"
+        ],
+        "UIDocumentPickerTypes": [
+          "com.adobe.pdf"
+        ]
       }
     },
     "android": {
@@ -27,7 +31,10 @@
       },
       "package": "com.wasserstiefel.travelet",
       "versionCode": 1,
-      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "edgeToEdgeEnabled": true
     },
     "web": {

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface FileInfo {
@@ -14,14 +14,19 @@ interface FilePickerProps {
   onFileSelected: (file: FileInfo) => void;
   title?: string;
   buttonText?: string;
+  existingNames?: string[]; // Names already used in categories
 }
 
 export function FilePicker({ 
   onFileSelected, 
   title = "Select PDF Document", 
-  buttonText = "Choose PDF File" 
+  buttonText = "Choose PDF File", 
+  existingNames = []
 }: FilePickerProps) {
-  const pickDocument = async () => {
+  // Store previously picked names in local state (for session)
+  const [previousNames, setPreviousNames] = useState<string[]>([]);
+  const [selectedName, setSelectedName] = useState<string>("");
+  const pickDocument = async (nameOverride?: string) => {
     if (Platform.OS === 'web') {
       // For web, we'll use the HTML file input
       const input = document.createElement('input');
@@ -53,6 +58,9 @@ export function FilePicker({
             fileCopyUri: URL.createObjectURL(file),
           };
 
+          if (!previousNames.includes(file.name)) {
+            setPreviousNames([...previousNames, file.name]);
+          }
           onFileSelected(mockFile);
         }
       };
@@ -98,15 +106,18 @@ export function FilePicker({
             return;
           }
 
-          // Create a standardized file object
+          // Use override name if provided
+          const finalName = nameOverride || file.name || 'Unknown Document';
           const mobileFile = {
-            name: file.name || 'Unknown Document',
+            name: finalName,
             size: file.size,
             type: file.type || 'application/pdf',
             uri: file.uri,
             fileCopyUri: file.fileCopyUri || file.uri,
           };
-
+          if (finalName && !previousNames.includes(finalName)) {
+            setPreviousNames([...previousNames, finalName]);
+          }
           console.log('Processed file:', mobileFile);
           onFileSelected(mobileFile);
         }
@@ -134,6 +145,9 @@ export function FilePicker({
                   uri: 'mock://sample.pdf',
                   fileCopyUri: 'mock://sample.pdf',
                 };
+                if (!previousNames.includes(sampleFile.name)) {
+                  setPreviousNames([...previousNames, sampleFile.name]);
+                }
                 onFileSelected(sampleFile);
               }
             },
@@ -148,6 +162,9 @@ export function FilePicker({
                   uri: 'mock://manual.pdf',
                   fileCopyUri: 'mock://manual.pdf',
                 };
+                if (!previousNames.includes(mockFile.name)) {
+                  setPreviousNames([...previousNames, mockFile.name]);
+                }
                 onFileSelected(mockFile);
               }
             }
@@ -160,7 +177,7 @@ export function FilePicker({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <TouchableOpacity style={styles.button} onPress={pickDocument}>
+      <TouchableOpacity style={styles.button} onPress={() => pickDocument(selectedName)}>
         <Ionicons name="document" size={20} color="#6b7280" />
         <Text style={styles.buttonText}>{buttonText}</Text>
       </TouchableOpacity>
@@ -169,10 +186,40 @@ export function FilePicker({
           Tap to select a PDF from your phone's storage
         </Text>
       )}
-      {Platform.OS !== 'web' && (
-        <Text style={styles.warning}>
-          ⚠️ Expo Go has limited file access. Use "Use Sample PDF" to test.
-        </Text>
+
+      {/* Shortcuts for traveler names with attached documents */}
+      {existingNames.length > 0 && (
+        <View style={styles.shortcutContainer}>
+          <Text style={styles.shortcutLabel}>Attach to an existing traveler:</Text>
+          <View style={styles.shortcutList}>
+            {existingNames.map((name) => (
+              <TouchableOpacity
+                key={name}
+                style={styles.shortcutButton}
+                onPress={() => pickDocument(name)}
+              >
+                <Text style={styles.shortcutText}>{name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+      {/* Shortcuts for previously picked names in session */}
+      {previousNames.length > 0 && (
+        <View style={styles.shortcutContainer}>
+          <Text style={styles.shortcutLabel}>Names picked in this session:</Text>
+          <View style={styles.shortcutList}>
+            {previousNames.map((name) => (
+              <TouchableOpacity
+                key={name}
+                style={[styles.shortcutButton, selectedName === name && styles.shortcutButtonSelected]}
+                onPress={() => setSelectedName(name)}
+              >
+                <Text style={styles.shortcutText}>{name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       )}
     </View>
   );
@@ -224,5 +271,39 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#fde68a',
+  },
+  shortcutContainer: {
+    marginTop: 18,
+    width: '100%',
+    alignItems: 'center',
+  },
+  shortcutLabel: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  shortcutList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  shortcutButton: {
+    backgroundColor: '#e5e7eb',
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+  },
+  shortcutButtonSelected: {
+    backgroundColor: '#d1d5db',
+    borderColor: '#374151',
+  },
+  shortcutText: {
+    fontSize: 13,
+    color: '#374151',
   },
 });

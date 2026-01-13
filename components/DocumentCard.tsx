@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PDFDocument } from '../services/PDFService';
 
 interface DocumentCardProps {
@@ -50,12 +50,12 @@ export function DocumentCard({ document, accentColor, textColor, onView, onDelet
       <View style={styles.content}>
         {/* Header with icon and menu */}
         <View style={styles.header}>
-          <View style={[styles.iconContainer, { backgroundColor: accentColor }]}>
-            <Ionicons name="document-text" size={24} color="#6b7280" />
+          <View style={[styles.iconContainer, { backgroundColor: '#EEF2FF', borderRadius: 16, borderWidth: 1, borderColor: '#E0E7FF', shadowColor: '#6366F1', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } }]}> 
+            <Ionicons name="document-outline" size={20} color="#6366F1" style={{ alignSelf: 'center' }} />
           </View>
           {onDelete && (
-            <TouchableOpacity style={styles.menuButton} onPress={handleDelete}>
-              <Ionicons name="trash" size={20} color="#ef4444" />
+            <TouchableOpacity style={styles.trashButton} onPress={handleDelete}>
+              <Ionicons name="trash" size={16} color="#F87171" style={{ alignSelf: 'center' }} />
             </TouchableOpacity>
           )}
         </View>
@@ -83,8 +83,8 @@ export function DocumentCard({ document, accentColor, textColor, onView, onDelet
 
         {/* Action button */}
         <TouchableOpacity style={styles.viewButton} onPress={handleView}>
-          <Ionicons name="eye" size={16} color={textColor} />
-          <Text style={[styles.viewButtonText, { color: textColor }]}>View</Text>
+          <Ionicons name="eye" size={16} color="#111827" />
+          <Text style={[styles.viewButtonText, { color: '#111827' }]}>View</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -113,12 +113,32 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   iconContainer: {
-    padding: 8,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 16,
+    backgroundColor: '#EEF2FF',
+    borderWidth: 1,
+    borderColor: '#E0E7FF',
+    shadowColor: '#6366F1',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
-  menuButton: {
-    padding: 8,
-    borderRadius: 20,
+  trashButton: {
+    padding: 10,
+    borderRadius: 16,
+    backgroundColor: '#FEE2E2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    shadowColor: '#ef4444',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
   documentInfo: {
     flex: 1,

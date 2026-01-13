@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { PDFCategory as IPDFCategory, PDFDocument } from '../services/PDFService';
 import { AddDocumentModal } from './AddDocumentModal';
 import { DocumentCard } from './DocumentCard';
@@ -10,9 +10,10 @@ interface DocumentCategoryProps {
   onDocumentAdded: (document: PDFDocument) => void;
   onDocumentDeleted: (document: PDFDocument) => void;
   onViewDocument: (document: PDFDocument) => void;
+  style?: ViewStyle; // Allow overriding container style
 }
 
-export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted, onViewDocument }: DocumentCategoryProps) {
+export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted, onViewDocument, style }: DocumentCategoryProps) {
   const [selectedTraveler, setSelectedTraveler] = useState<string>("all");
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -51,13 +52,13 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: category.color, borderColor: category.borderColor }]}>
+      <View style={[styles.container, { backgroundColor: category.color, borderColor: category.borderColor }, style]}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={[styles.categoryName, { color: category.textColor }]}>
               {category.name}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.addButton, { borderColor: category.textColor }]}
               onPress={() => setShowAddModal(true)}
             >
@@ -66,7 +67,7 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {/* Traveler Tabs */}
         {travelers.length > 0 && (
           <View style={styles.travelerTabs}>
@@ -85,7 +86,7 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
                   All ({category.documents.length})
                 </Text>
               </TouchableOpacity>
-              
+
               {travelers.map((traveler) => {
                 const travelerDocCount = category.documents.filter(doc => doc.traveler === traveler).length;
                 return (
@@ -105,38 +106,35 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
                         styles.tabText,
                         selectedTraveler === traveler ? { color: category.textColor } : { color: '#6b7280' }
                       ]}>
-                        {traveler}
-                      </Text>
-                      <Text style={[
-                        styles.tabCount,
-                        selectedTraveler === traveler ? { color: category.textColor } : { color: '#6b7280' }
-                      ]}>
-                        ({travelerDocCount})
+                        {traveler} ({travelerDocCount})
                       </Text>
                     </View>
                   </TouchableOpacity>
                 );
               })}
-              
+
               {/* Add Family Member Button */}
-              <TouchableOpacity style={[styles.addFamilyButton, { borderColor: category.textColor }]}>
-                <Ionicons name="person-add" size={16} color={category.textColor} />
-                <Text style={[styles.addFamilyText, { color: category.textColor }]}>+</Text>
+              <TouchableOpacity
+                style={styles.addFamilyButton}
+                onPress={() => setShowAddModal(true)}
+              >
+                <Ionicons name="person-add" size={14} color="#6b7280" />
+                <Text style={styles.addFamilyText}>Add Traveler</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
         )}
 
+        {/* Document Count */}
         <Text style={[styles.documentCount, { color: category.textColor }]}>
           {filteredDocuments.length} document{filteredDocuments.length !== 1 ? 's' : ''}
-          {selectedTraveler !== "all" && ` for ${selectedTraveler}`}
         </Text>
-        
-        {/* Documents */}
+
+        {/* Documents List */}
         {filteredDocuments.length > 0 ? (
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.documentsContainer}
             style={styles.documents}
           >
@@ -157,7 +155,7 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
             <Text style={[styles.emptyStateText, { color: category.textColor }]}>
               {selectedTraveler === "all" ? "No documents yet" : `No documents for ${selectedTraveler}`}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.emptyStateButton, { borderColor: category.textColor }]}
               onPress={() => setShowAddModal(true)}
             >
@@ -177,6 +175,7 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
         categoryName={category.name}
         onClose={() => setShowAddModal(false)}
         onDocumentAdded={handleAddDocument}
+        existingTravelerNames={travelers}
       />
     </>
   );

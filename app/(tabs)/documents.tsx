@@ -1,10 +1,9 @@
 import { DocumentCategory } from '@/components/DocumentCategory';
 import { PDFViewer } from '@/components/PDFViewer';
-import { AddDocumentModal } from '@/components/AddDocumentModal';
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import PDFService, { PDFCategory, PDFDocument } from '@/services/PDFService';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function DocumentsScreen() {
   const [categories, setCategories] = useState<PDFCategory[]>([]);
@@ -91,10 +90,23 @@ export default function DocumentsScreen() {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Travel Document Manager</Text>
-            <Text style={styles.subtitle}>
-              Organize and store your travel documents securely
+            <Text style={styles.title}>Travelet</Text>
+            <Text style={styles.explanation}>
+              Travelet lets you organize and attach travel documents to travelers. Select a category, add a PDF, and assign it to a traveler name. You can also keep track of items to declare for customs or travel. All your travel paperwork is kept organized and easy to find.
             </Text>
+          </View>
+
+          {/* Things to Declare Section */}
+          <View style={styles.declareSection}>
+            <Text style={styles.declareTitle}>Things to Declare</Text>
+            <Text style={styles.declareSubtitle}>
+              Add items you need to declare for customs or travel.
+            </Text>
+            {/* Placeholder for declaration items */}
+            <View style={styles.declareList}>
+              <Text style={styles.declareItem}>• Example: Electronics, cash, food, etc.</Text>
+              {/* You can add a form or list here for user input */}
+            </View>
           </View>
 
           {/* Categories */}
@@ -155,6 +167,31 @@ export default function DocumentsScreen() {
 }
 
 const styles = StyleSheet.create({
+  declareSection: {
+    marginBottom: 32,
+    padding: 16,
+    backgroundColor: '#E0E7FF', // indigo-100
+    borderRadius: 12,
+  },
+  declareTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#3730A3', // indigo-800
+    marginBottom: 4,
+  },
+  declareSubtitle: {
+    fontSize: 14,
+    color: '#6366F1', // indigo-500
+    marginBottom: 8,
+  },
+  declareList: {
+    marginLeft: 8,
+  },
+  declareItem: {
+    fontSize: 16,
+    color: '#3730A3',
+    marginBottom: 4,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f9fafb', // gray-50
@@ -175,10 +212,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#111827', // gray-900
   },
-  subtitle: {
+  explanation: {
     fontSize: 16,
     color: '#6b7280', // gray-500
     lineHeight: 24,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   categories: {
     gap: 32,

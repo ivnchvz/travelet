@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, TextInput, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FilePicker } from './FilePicker';
+import React, { useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import PDFService, { PDFDocument } from '../services/PDFService';
+import { FilePicker } from './FilePicker';
 
 interface FileInfo {
   name: string;
@@ -18,6 +28,7 @@ interface AddDocumentModalProps {
   categoryName: string;
   onClose: () => void;
   onDocumentAdded: (document: PDFDocument) => void;
+  existingTravelerNames?: string[]; // Traveler names already used in this category
 }
 
 export function AddDocumentModal({ 
@@ -25,7 +36,8 @@ export function AddDocumentModal({
   categoryId, 
   categoryName, 
   onClose, 
-  onDocumentAdded 
+  onDocumentAdded, 
+  existingTravelerNames = []
 }: AddDocumentModalProps) {
   const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);
   const [travelerName, setTravelerName] = useState('');
@@ -35,36 +47,28 @@ export function AddDocumentModal({
     setSelectedFile(file);
   };
 
-  const handleAddDocument = async () => {
-    if (!selectedFile) {
-      Alert.alert('No File Selected', 'Please select a PDF file first.');
-      return;
-    }
+  const resetForm = () => {
+    setSelectedFile(null);
+    setTravelerName('');
+  };
 
-    if (!travelerName.trim()) {
-      Alert.alert('No Traveler Name', 'Please enter a traveler name.');
-      return;
-    }
+  const handleAddDocument = async () => {
+    if (!selectedFile || !travelerName.trim() || isLoading) return;
 
     setIsLoading(true);
+
     try {
-      let filePath = '';
-      
-      if (Platform.OS === 'web') {
-        // For web, we'll use the file name as the path
-        filePath = selectedFile.name;
-      } else {
-        // For mobile, use the file copy URI
-        filePath = selectedFile.fileCopyUri || selectedFile.uri || '';
-      }
+      // Use optional chaining and nullish coalescing to handle undefined size
+      const filePath = selectedFile.uri ?? '';
+      const originalName = selectedFile.name;
+      const traveler = travelerName;
 
       const document = await PDFService.addDocument(
-        categoryId,
-        filePath,
-        selectedFile.name || 'Unknown Document',
-        travelerName.trim()
+        categoryId,           // 1st argument: categoryId
+        filePath,             // 2nd argument: filePath
+        originalName,         // 3rd argument: originalName
+        traveler              // 4th argument: traveler
       );
-
       onDocumentAdded(document);
       onClose();
       resetForm();
@@ -76,86 +80,98 @@ export function AddDocumentModal({
     }
   };
 
-  const resetForm = () => {
-    setSelectedFile(null);
-    setTravelerName('');
-  };
-
-  const handleClose = () => {
-    resetForm();
-    onClose();
-  };
-
   return (
     <Modal
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Add Document to {categoryName}</Text>
-          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-            <Ionicons name="close" size={24} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >
+        <View style={styles.innerContainer}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Add Document to {categoryName}</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Ionicons name="close" size={24} color="#6b7280" />
+            </TouchableOpacity>
+          </View>
 
-        {/* Content */}
-        <View style={styles.content}>
-          {/* File Picker */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Select PDF File</Text>
-            <FilePicker 
-              onFileSelected={handleFileSelected}
-              title="Choose a PDF document"
-              buttonText={selectedFile ? selectedFile.name : "Choose PDF File"}
-            />
-            {selectedFile && (
-              <View style={styles.fileInfo}>
-                <Ionicons name="checkmark-circle" size={20} color="#10b981" />
-                <Text style={styles.fileInfoText}>File selected: {selectedFile.name}</Text>
-                {selectedFile.size && (
+          {/* Content */}
+          <View style={styles.content}>
+            {/* File Picker */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Select PDF File</Text>
+              <FilePicker 
+                onFileSelected={handleFileSelected}
+                title="Choose a PDF document"
+                buttonText={selectedFile ? selectedFile.name : "Choose PDF File"}
+              />
+              {selectedFile && (
+                <View style={styles.fileInfo}>
+                  <Ionicons name="checkmark-circle" size={20} color="#10b981" />
                   <Text style={styles.fileSizeText}>
-                    Size: {Platform.OS === 'web' ? `${(selectedFile.size / 1024).toFixed(1)} KB` : 'Unknown'}
+                    Size: {selectedFile.size !== undefined 
+                      ? `${(selectedFile.size / 1024).toFixed(1)} KB` 
+                      : 'Unknown'}
                   </Text>
-                )}
-              </View>
-            )}
-          </View>
+                </View>
+              )}
+            </View>
 
-          {/* Traveler Name Input */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Traveler Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter traveler name"
-              value={travelerName}
-              onChangeText={setTravelerName}
-              autoCapitalize="words"
-            />
-          </View>
+            {/* Traveler Name Input */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Traveler Name</Text>
+              {existingTravelerNames.length > 0 && (
+                <View style={styles.shortcutContainer}>
+                  <Text style={styles.shortcutLabel}>Existing Travelers</Text>
+                  <View style={styles.shortcutList}>
+                    {existingTravelerNames.map((name, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.shortcutButton}
+                        onPress={() => setTravelerName(name)}
+                      >
+                        <Text style={styles.shortcutText}>{name}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              )}
+              <TextInput
+                style={styles.input}
+                placeholder="Enter traveler name"
+                value={travelerName}
+                onChangeText={setTravelerName}
+                autoCapitalize="words"
+                returnKeyType="done"
+              />
+            </View>
 
-          {/* Add Button */}
-          <TouchableOpacity
-            style={[
-              styles.addButton,
-              (!selectedFile || !travelerName.trim() || isLoading) && styles.addButtonDisabled
-            ]}
-            onPress={handleAddDocument}
-            disabled={!selectedFile || !travelerName.trim() || isLoading}
-          >
-            {isLoading ? (
-              <Text style={styles.addButtonText}>Adding...</Text>
-            ) : (
-              <>
-                <Ionicons name="add" size={20} color="white" />
-                <Text style={styles.addButtonText}>Add Document</Text>
-              </>
-            )}
-          </TouchableOpacity>
+            {/* Add Button */}
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                (!selectedFile || !travelerName.trim() || isLoading) && styles.addButtonDisabled
+              ]}
+              onPress={handleAddDocument}
+              disabled={!selectedFile || !travelerName.trim() || isLoading}
+            >
+              {isLoading ? (
+                <Text style={styles.addButtonText}>Adding...</Text>
+              ) : (
+                <>
+                  <Ionicons name="add" size={20} color="white" />
+                  <Text style={styles.addButtonText}>Add Document</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -163,67 +179,101 @@ export function AddDocumentModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+  },
+  explanation: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 4,
+    marginBottom: 12,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   closeButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
+    padding: 4,
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: 16,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
+    fontWeight: '500',
+    marginBottom: 8,
   },
   fileInfo: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#f0fdf4',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#bbf7d0',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
   },
   fileInfoText: {
     fontSize: 14,
-    color: '#15803d',
-    marginTop: 4,
+    color: '#6b7280',
   },
   fileSizeText: {
     fontSize: 12,
-    color: '#15803d',
-    marginTop: 4,
-    opacity: 0.8,
+    color: '#9ca3af',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: '#e5e7eb',
+    borderRadius: 4,
+    padding: 8,
     fontSize: 16,
-    backgroundColor: '#fff',
+    textAlignVertical: 'top',
+  },
+  shortcutContainer: {
+    marginBottom: 8,
+    alignItems: 'flex-start',
+    width: '100%',
+  },
+  shortcutLabel: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 4,
+    textAlign: 'left',
+  },
+  shortcutList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 4,
+  },
+  shortcutButton: {
+    backgroundColor: '#e5e7eb',
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+  },
+  shortcutButtonSelected: {
+    backgroundColor: '#d1d5db',
+    borderColor: '#374151',
+  },
+  shortcutText: {
+    fontSize: 13,
+    color: '#374151',
   },
   addButton: {
     flexDirection: 'row',
@@ -231,10 +281,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: '#3b82f6',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginTop: 20,
+    padding: 12,
+    borderRadius: 4,
   },
   addButtonDisabled: {
     backgroundColor: '#9ca3af',
@@ -242,6 +290,6 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });

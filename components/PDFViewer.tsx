@@ -42,41 +42,6 @@ export function PDFViewer({ visible, filePath, documentName, onClose }: PDFViewe
 
   if (!visible) return null;
 
-  // For web, show a placeholder since react-native-pdf doesn't work on web
-  if (Platform.OS === 'web') {
-    return (
-      <Modal
-        visible={visible}
-        animationType="slide"
-        presentationStyle="fullScreen"
-      >
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title} numberOfLines={1}>
-              {documentName}
-            </Text>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Ionicons name="close" size={24} color="#6b7280" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.webContent}>
-            <Ionicons name="document-text" size={64} color="#6b7280" />
-            <Text style={styles.webTitle}>PDF Viewer</Text>
-            <Text style={styles.webSubtitle}>
-              PDF viewing is available on mobile devices only.
-            </Text>
-            <Text style={styles.webInfo}>
-              Document: {documentName}
-            </Text>
-            <Text style={styles.webInfo}>
-              Path: {filePath}
-            </Text>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
   // Show error if file doesn't exist or there's another issue
   if (fileExists === false || error) {
     return (
