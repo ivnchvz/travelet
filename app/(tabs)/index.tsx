@@ -43,7 +43,7 @@ export default function DocumentsScreen() {
 
     // Check for Windows on web to disable snapping (paging)
     if (Platform.OS === 'web') {
-      const isWindows = navigator.userAgent.toLowerCase().includes('win');
+      const isWindows = /Win/.test(navigator.platform) || /Windows/.test(navigator.userAgent);
       if (isWindows) {
         setIsPagingEnabled(false);
       }
@@ -289,6 +289,7 @@ export default function DocumentsScreen() {
               }}
               defaultIndex={0}
               pagingEnabled={isPagingEnabled} // Dynamic snapping
+              snapEnabled={isPagingEnabled} // Disable snapping altogether for Windows Web
             />
           )}
         </View>
