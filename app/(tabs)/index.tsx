@@ -499,17 +499,17 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   header: {
-    paddingTop: Platform.OS === 'web' ? 80 : 10,
+    paddingTop: Platform.OS === 'web' ? 35 : 10,
     marginBottom: 0,
   },
   traveletTitle: {
     fontSize: 32,
     fontWeight: '700',
     letterSpacing: 0.5,
-    color: '#3730A3', // indigo-800
+    color: '#3696F8',
     marginBottom: 4,
     textAlign: 'center',
-    fontFamily: 'System',
+    fontFamily: 'Rubik',
     textTransform: 'none',
   },
   headerTitleRow: {
