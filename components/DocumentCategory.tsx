@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { PDFCategory as IPDFCategory, PDFDocument } from '../services/PDFService';
 import { AddDocumentModal } from './AddDocumentModal';
 import { DocumentCard } from './DocumentCard';
@@ -41,7 +41,13 @@ export function DocumentCategory({ category, onDocumentAdded, onDocumentDeleted,
       await onDocumentDeleted(document);
     } catch (error) {
       console.error('Error deleting document:', error);
-      Alert.alert('Error', 'Failed to delete document. Please try again.');
+      const message = 'Failed to delete document. Please try again.';
+      if (Platform.OS === 'web') {
+        console.warn('Alert: ' + message);
+        alert(message);
+      } else {
+        Alert.alert('Error', message);
+      }
     }
   };
 

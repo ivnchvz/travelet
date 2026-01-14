@@ -1,7 +1,7 @@
 import { AddCategoryModal } from '@/components/AddCategoryModal';
 import { DocumentCategory } from '@/components/DocumentCategory';
 import { PDFViewer } from '@/components/PDFViewer';
-import PDFService, { PDFCategory, PDFDocument } from '@/services/PDFService';
+import PDFService, { PDFDocument } from '@/services/PDFService';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
@@ -9,30 +9,46 @@ import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, u
 import Carousel from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Carousel item height relative to screen
-const ITEM_HEIGHT_RATIO = 0.5;
+// Carousel item height relative to screen - increased to prevent cut-off
+const ITEM_HEIGHT_RATIO = 0.6;
 
 export default function DocumentsScreen() {
-  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
-  const [categories, setCategories] = useState<PDFCategory[]>([]);
-  const [selectedDocument, setSelectedDocument] = useState<PDFDocument | null>(null);
+  const { width: winWidth, height: winHeight } = useWindowDimensions();
+  const [dimensions, setDimensions] = useState({ width: 375, height: 750 });
+  const [isMounted, setIsMounted] = useState(false);
+
+  const [categories, setCategories] = useState<any[]>([]); // Use any[] temporarily if PDFCategory is not imported correctly, or just PDFCategory[]
+  const [selectedDocument, setSelectedDocument] = useState<any | null>(null);
   const [showPDFViewer, setShowPDFViewer] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [declareItems, setDeclareItems] = useState<string[]>([]);
   const [declareInput, setDeclareInput] = useState('');
-
-  // Track container dimensions for Carousel
   const [containerHeight, setContainerHeight] = useState(0);
+  const [isPagingEnabled, setIsPagingEnabled] = useState(true);
+
+  // Dimensions for the app
+  const SCREEN_WIDTH = dimensions.width;
+  const SCREEN_HEIGHT = dimensions.height;
 
   // Height of each card in the carousel
   const itemHeight = SCREEN_HEIGHT * ITEM_HEIGHT_RATIO;
 
   useEffect(() => {
+    setIsMounted(true);
+    setDimensions({ width: winWidth, height: winHeight });
     loadCategories();
     loadDeclareItems();
-  }, []);
+
+    // Check for Windows on web to disable snapping (paging)
+    if (Platform.OS === 'web') {
+      const isWindows = navigator.userAgent.toLowerCase().includes('win');
+      if (isWindows) {
+        setIsPagingEnabled(false);
+      }
+    }
+  }, [winWidth, winHeight]);
 
   const loadDeclareItems = async () => {
     try {
@@ -81,7 +97,7 @@ export default function DocumentsScreen() {
 
   const handleDocumentDeleted = async (document: PDFDocument) => {
     try {
-      const category = categories.find(c => c.documents.some(d => d.id === document.id));
+      const category = categories.find((c: any) => c.documents.some((d: any) => d.id === document.id));
       if (category) {
         await PDFService.deleteDocument(category.id, document.id);
         await loadCategories();
@@ -272,6 +288,7 @@ export default function DocumentsScreen() {
                 parallaxAdjacentItemScale: 0.92,
               }}
               defaultIndex={0}
+              pagingEnabled={isPagingEnabled} // Dynamic snapping
             />
           )}
         </View>
@@ -291,12 +308,6 @@ export default function DocumentsScreen() {
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
               <Text style={styles.traveletTitle}>travelet</Text>
-              <TouchableOpacity
-                style={styles.headerAddButton}
-                onPress={() => setShowAddCategoryModal(true)}
-              >
-                <Ionicons name="add-circle-outline" size={28} color="#6366f1" />
-              </TouchableOpacity>
             </View>
             <Text style={styles.explanation}>
               All your travel paperwork, effortlessly organized.
@@ -351,7 +362,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 100, // Nudge carousel further down to clear the smooth gradient
+    marginTop: 170, // Slightly reduced to blend better with the taller overlay
   },
   carouselItemContainer: {
     flex: 1,
@@ -474,7 +485,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 200, // Taller overlay for an ultra-smooth fade
+    height: 220, // Taller overlay for an ultra-smooth fade
     zIndex: 10,
     paddingHorizontal: 16,
   },
@@ -487,7 +498,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   header: {
-    paddingTop: 10,
+    paddingTop: Platform.OS === 'web' ? 80 : 10,
     marginBottom: 0,
   },
   traveletTitle: {

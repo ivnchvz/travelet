@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PDFDocument } from '../services/PDFService';
 
 interface DocumentCardProps {
@@ -14,8 +14,8 @@ interface DocumentCardProps {
 export function DocumentCard({ document, accentColor, textColor, onView, onDelete }: DocumentCardProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
@@ -31,26 +31,33 @@ export function DocumentCard({ document, accentColor, textColor, onView, onDelet
 
   const handleDelete = () => {
     if (onDelete) {
-      Alert.alert(
-        'Delete Document',
-        `Are you sure you want to delete "${document.name}"?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', style: 'destructive', onPress: () => onDelete(document) }
-        ]
-      );
+      if (Platform.OS === 'web') {
+        const confirmed = window.confirm(`Are you sure you want to delete "${document.name}"?`);
+        if (confirmed) {
+          onDelete(document);
+        }
+      } else {
+        Alert.alert(
+          'Delete Document',
+          `Are you sure you want to delete "${document.name}"?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => onDelete(document) }
+          ]
+        );
+      }
     }
   };
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.container}
       activeOpacity={0.7}
     >
       <View style={styles.content}>
         {/* Header with icon and menu */}
         <View style={styles.header}>
-          <View style={[styles.iconContainer, { backgroundColor: '#EEF2FF', borderRadius: 16, borderWidth: 1, borderColor: '#E0E7FF', shadowColor: '#6366F1', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } }]}> 
+          <View style={[styles.iconContainer, { backgroundColor: '#EEF2FF', borderRadius: 16, borderWidth: 1, borderColor: '#E0E7FF', shadowColor: '#6366F1', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } }]}>
             <Ionicons name="document-outline" size={20} color="#6366F1" style={{ alignSelf: 'center' }} />
           </View>
           {onDelete && (
@@ -59,13 +66,13 @@ export function DocumentCard({ document, accentColor, textColor, onView, onDelet
             </TouchableOpacity>
           )}
         </View>
-        
+
         {/* Document info */}
         <View style={styles.documentInfo}>
           <Text style={styles.documentName} numberOfLines={2}>
             {document.name}
           </Text>
-          
+
           {/* Traveler Badge */}
           <View style={styles.travelerBadge}>
             <View style={styles.travelerInitials}>
@@ -73,7 +80,7 @@ export function DocumentCard({ document, accentColor, textColor, onView, onDelet
             </View>
             <Text style={styles.travelerName}>{document.traveler}</Text>
           </View>
-          
+
           {/* Meta info */}
           <View style={styles.metaInfo}>
             <Text style={styles.metaText}>Added {formatDate(document.dateAdded)}</Text>
