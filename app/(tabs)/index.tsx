@@ -297,12 +297,12 @@ export default function DocumentsScreen() {
         {/* Top Soft Gradient Overlay */}
         <LinearGradient
           colors={[
-            'rgba(249, 250, 251, 1)',
-            'rgba(249, 250, 251, 1)',
-            'rgba(249, 250, 251, 0.2)',
-            'rgba(249, 250, 251, 0)',
+            'rgba(255, 255, 255, 1)',
+            'rgba(255, 255, 255, 1)',
+            'rgba(255, 255, 255, 0.8)',
+            'rgba(255, 255, 255, 0)',
           ]}
-          locations={[0, 0.53, 0.84, 0.96]} // Finishes transparency slightly higher
+          locations={[0, 0.5, 0.8, 1]}
           style={styles.topOverlay}
           pointerEvents="none"
         >
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb', // gray-50
+    backgroundColor: '#ffffff',
   },
   scrollView: {
     flex: 1,
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   header: {
-    paddingTop: Platform.OS === 'web' ? 35 : 10,
+    paddingTop: Platform.OS === 'web' ? 50 : 10,
     marginBottom: 0,
   },
   traveletTitle: {
