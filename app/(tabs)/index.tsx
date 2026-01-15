@@ -3,6 +3,7 @@ import { DocumentCategory } from '@/components/DocumentCategory';
 import { PDFViewer } from '@/components/PDFViewer';
 import PDFService, { PDFDocument } from '@/services/PDFService';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
@@ -311,6 +312,11 @@ export default function DocumentsScreen() {
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
               <Text style={styles.traveletTitle}>travelet</Text>
+              <Image
+                source={require('../../assets/images/airplane-icon.png')}
+                style={styles.airplaneIcon}
+                contentFit="contain"
+              />
             </View>
             <Text style={styles.explanation}>
               All your travel paperwork, effortlessly organized.
@@ -506,13 +512,12 @@ const styles = StyleSheet.create({
   },
   traveletTitle: {
     fontSize: 32,
-    fontWeight: '700',
-    fontStyle: 'italic',
+    fontWeight: '900',
     letterSpacing: 0.5,
-    color: '#3696F8',
+    color: '#020403',
     marginBottom: 4,
     textAlign: 'center',
-    fontFamily: 'BeVietnamPro-BoldItalic',
+    fontFamily: 'BeVietnamPro-Black',
     textTransform: 'none',
   },
   headerTitleRow: {
@@ -520,6 +525,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+  },
+  airplaneIcon: {
+    width: 28,
+    height: 28,
+    marginTop: -2, // Subtle alignment tweak
   },
   headerAddButton: {
     padding: 4,

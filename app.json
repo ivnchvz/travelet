@@ -62,7 +62,7 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "baseUrl": "./"
+      "baseUrl": "/travelet-app"
     },
     "extra": {
       "router": {},

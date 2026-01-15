@@ -31,12 +31,12 @@ interface AddDocumentModalProps {
   existingTravelerNames?: string[]; // Traveler names already used in this category
 }
 
-export function AddDocumentModal({ 
-  visible, 
-  categoryId, 
-  categoryName, 
-  onClose, 
-  onDocumentAdded, 
+export function AddDocumentModal({
+  visible,
+  categoryId,
+  categoryName,
+  onClose,
+  onDocumentAdded,
   existingTravelerNames = []
 }: AddDocumentModalProps) {
   const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);
@@ -105,7 +105,7 @@ export function AddDocumentModal({
             {/* File Picker */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Select PDF File</Text>
-              <FilePicker 
+              <FilePicker
                 onFileSelected={handleFileSelected}
                 title="Choose a PDF document"
                 buttonText={selectedFile ? selectedFile.name : "Choose PDF File"}
@@ -114,8 +114,8 @@ export function AddDocumentModal({
                 <View style={styles.fileInfo}>
                   <Ionicons name="checkmark-circle" size={20} color="#10b981" />
                   <Text style={styles.fileSizeText}>
-                    Size: {selectedFile.size !== undefined 
-                      ? `${(selectedFile.size / 1024).toFixed(1)} KB` 
+                    Size: {selectedFile.size !== undefined
+                      ? `${(selectedFile.size / 1024).toFixed(1)} KB`
                       : 'Unknown'}
                   </Text>
                 </View>
@@ -179,6 +179,7 @@ export function AddDocumentModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'web' ? 80 : 0,
   },
   innerContainer: {
     flex: 1,

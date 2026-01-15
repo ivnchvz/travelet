@@ -14,6 +14,8 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     Rubik: require('../assets/fonts/Rubik.ttf'),
     'BeVietnamPro-BoldItalic': require('../assets/fonts/BeVietnamPro-BoldItalic.ttf'),
+    'BeVietnamPro-ExtraBoldItalic': require('../assets/fonts/BeVietnamPro-ExtraBoldItalic.ttf'),
+    'BeVietnamPro-Black': require('../assets/fonts/BeVietnamPro-Black.ttf'),
   });
 
   if (!loaded) {
