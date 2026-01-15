@@ -13,6 +13,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     Rubik: require('../assets/fonts/Rubik.ttf'),
+    'BeVietnamPro-BoldItalic': require('../assets/fonts/BeVietnamPro-BoldItalic.ttf'),
   });
 
   if (!loaded) {

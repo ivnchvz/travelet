@@ -506,12 +506,13 @@ const styles = StyleSheet.create({
   },
   traveletTitle: {
     fontSize: 32,
-    fontWeight: '400',
+    fontWeight: '700',
+    fontStyle: 'italic',
     letterSpacing: 0.5,
     color: '#3696F8',
     marginBottom: 4,
     textAlign: 'center',
-    fontFamily: 'Rubik',
+    fontFamily: 'BeVietnamPro-BoldItalic',
     textTransform: 'none',
   },
   headerTitleRow: {
