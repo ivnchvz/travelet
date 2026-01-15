@@ -299,10 +299,11 @@ export default function DocumentsScreen() {
           colors={[
             'rgba(255, 255, 255, 1)',
             'rgba(255, 255, 255, 1)',
-            'rgba(255, 255, 255, 0.8)',
+            'rgba(255, 255, 255, 0.9)',
+            'rgba(255, 255, 255, 0.5)',
             'rgba(255, 255, 255, 0)',
           ]}
-          locations={[0, 0.5, 0.8, 1]}
+          locations={[0, 0.4, 0.7, 0.9, 1]}
           style={styles.topOverlay}
           pointerEvents="none"
         >
@@ -486,7 +487,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 220, // Taller overlay for an ultra-smooth fade
+    height: 250, // Slightly taller for an ultra-smooth fade
     zIndex: 10,
     paddingHorizontal: 16,
   },
