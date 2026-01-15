@@ -299,12 +299,12 @@ export default function DocumentsScreen() {
           colors={[
             'rgba(255, 255, 255, 1)',
             'rgba(255, 255, 255, 1)',
-            'rgba(255, 255, 255, 0.95)',
-            'rgba(255, 255, 255, 0.7)',
-            'rgba(255, 255, 255, 0.3)',
+            'rgba(255, 255, 255, 0.9)',
+            'rgba(255, 255, 255, 0.5)',
+            'rgba(255, 255, 255, 0.1)',
             'rgba(255, 255, 255, 0)',
           ]}
-          locations={[0, 0.65, 0.75, 0.85, 0.95, 1]}
+          locations={[0, 0.55, 0.7, 0.8, 0.85, 1]}
           style={styles.topOverlay}
           pointerEvents="none"
         >
