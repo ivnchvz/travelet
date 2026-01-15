@@ -299,11 +299,12 @@ export default function DocumentsScreen() {
           colors={[
             'rgba(255, 255, 255, 1)',
             'rgba(255, 255, 255, 1)',
-            'rgba(255, 255, 255, 0.9)',
-            'rgba(255, 255, 255, 0.5)',
+            'rgba(255, 255, 255, 0.95)',
+            'rgba(255, 255, 255, 0.7)',
+            'rgba(255, 255, 255, 0.3)',
             'rgba(255, 255, 255, 0)',
           ]}
-          locations={[0, 0.4, 0.7, 0.9, 1]}
+          locations={[0, 0.65, 0.75, 0.85, 0.95, 1]}
           style={styles.topOverlay}
           pointerEvents="none"
         >
@@ -505,7 +506,7 @@ const styles = StyleSheet.create({
   },
   traveletTitle: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: '400',
     letterSpacing: 0.5,
     color: '#3696F8',
     marginBottom: 4,
