@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Pdf from 'react-native-pdf';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface PDFViewerProps {
   visible: boolean;
@@ -16,6 +17,15 @@ const { width, height } = Dimensions.get('window');
 export function PDFViewer({ visible, filePath, documentName, onClose }: PDFViewerProps) {
   const [fileExists, setFileExists] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /**
+   * The bar sits under the status bar, so it has to know how tall that is.
+   *
+   * It used to pad down by a flat 50, which is nobody's inset in particular —
+   * a hair too much on an older phone and nine points short on one with an
+   * island, where it left the row riding up into the clock.
+   */
+  const insets = useSafeAreaInsets();
+  const headerStyle = [styles.header, { paddingTop: insets.top + 6 }];
 
   useEffect(() => {
     async function checkFile() {
@@ -51,12 +61,12 @@ export function PDFViewer({ visible, filePath, documentName, onClose }: PDFViewe
         presentationStyle="fullScreen"
       >
         <View style={styles.container}>
-          <View style={styles.header}>
+          <View style={headerStyle}>
             <Text style={styles.title} numberOfLines={1}>
               {documentName}
             </Text>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Ionicons name="close" size={24} color="#6b7280" />
+              <Ionicons name="close" size={18} color="#6b7280" />
             </TouchableOpacity>
           </View>
           <Text style={styles.errorText}>{error || 'PDF file not found'}</Text>
@@ -74,12 +84,12 @@ export function PDFViewer({ visible, filePath, documentName, onClose }: PDFViewe
         presentationStyle="fullScreen"
       >
         <View style={styles.container}>
-          <View style={styles.header}>
+          <View style={headerStyle}>
             <Text style={styles.title} numberOfLines={1}>
               {documentName}
             </Text>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Ionicons name="close" size={24} color="#6b7280" />
+              <Ionicons name="close" size={18} color="#6b7280" />
             </TouchableOpacity>
           </View>
           <Text style={styles.errorText}>Loading PDF...</Text>
@@ -96,12 +106,12 @@ export function PDFViewer({ visible, filePath, documentName, onClose }: PDFViewe
       presentationStyle="fullScreen"
     >
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={headerStyle}>
           <Text style={styles.title} numberOfLines={1}>
             {documentName}
           </Text>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close" size={24} color="#6b7280" />
+            <Ionicons name="close" size={18} color="#6b7280" />
           </TouchableOpacity>
         </View>
         <Pdf
@@ -131,22 +141,31 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 50,
-    paddingBottom: 16,
+    paddingBottom: 12,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#e5e7eb',
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: '#111827',
     flex: 1,
-    marginRight: 16,
+    marginRight: 12,
   },
+  /**
+   * Sized, rather than however large its padding happened to make it.
+   *
+   * A round button drawn out of padding is only a circle by coincidence, and
+   * the icon inside it only centred by coincidence too. Giving it a size and
+   * centring the glyph puts it on the same optical line as the title beside it.
+   */
   closeButton: {
-    padding: 8,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#f3f4f6',
   },
   pdf: {

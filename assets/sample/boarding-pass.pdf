@@ -1,0 +1,70 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 420 595] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1613 >>
+stream
+0.08 g 0 517 420 78 re f
+1 1 1 rg
+BT /F2 15 Tf 1 0 0 1 40 553 Tm (TRAVELET AIRWAYS) Tj ET
+BT /F1 9 Tf 1 0 0 1 40 535 Tm (BOARDING PASS / TARJETA DE EMBARQUE) Tj ET
+0 g
+BT /F2 42 Tf 1 0 0 1 40 445 Tm (MAD) Tj ET
+BT /F2 42 Tf 1 0 0 1 250 445 Tm (BCN) Tj ET
+BT /F1 10 Tf 1 0 0 1 40 431 Tm (Madrid) Tj ET
+BT /F1 10 Tf 1 0 0 1 250 431 Tm (Barcelona) Tj ET
+0.75 G 0.8 w 40 403 m 380 403 l S
+BT /F1 7.5 Tf 1 0 0 1 40 369 Tm (PASSENGER) Tj ET
+BT /F2 13 Tf 1 0 0 1 40 353 Tm (GARCIA/ANA) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 40 323 Tm (FLIGHT) Tj ET
+BT /F2 13 Tf 1 0 0 1 40 307 Tm (TR 1042) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 230 323 Tm (DATE) Tj ET
+BT /F2 13 Tf 1 0 0 1 230 307 Tm (14 MAR 2026) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 40 277 Tm (BOARDING) Tj ET
+BT /F2 13 Tf 1 0 0 1 40 261 Tm (09:05) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 230 277 Tm (DEPARTURE) Tj ET
+BT /F2 13 Tf 1 0 0 1 230 261 Tm (09:35) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 40 231 Tm (ARRIVAL) Tj ET
+BT /F2 13 Tf 1 0 0 1 40 215 Tm (11:00) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 230 231 Tm (SEAT) Tj ET
+BT /F2 13 Tf 1 0 0 1 230 215 Tm (14A) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 40 185 Tm (GATE) Tj ET
+BT /F2 13 Tf 1 0 0 1 40 169 Tm (B12) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 230 185 Tm (TERMINAL) Tj ET
+BT /F2 13 Tf 1 0 0 1 230 169 Tm (4) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 40 139 Tm (BOOKING REFERENCE) Tj ET
+BT /F2 13 Tf 1 0 0 1 40 123 Tm (QZ7K4M) Tj ET
+0.75 G 0.8 w 40 113 m 380 113 l S
+BT /F1 7.5 Tf 1 0 0 1 40 93 Tm (A SAMPLE DOCUMENT, INCLUDED WITH TRAVELET) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 40 81 Tm (Throw it away whenever you like.) Tj ET
+0.9 g 40 15 340 52 re f
+BT /F1 7 Tf 1 0 0 1 150 37 Tm (SAMPLE - NOT A SCANNABLE CODE) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000001916 00000 n 
+0000002013 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2115
+%%EOF

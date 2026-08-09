@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The Live Activity extension's own privacy manifest.
+
+  An extension is a separate binary and Apple reads a manifest out of each one,
+  so the app's does not cover this. The only required-reason API it touches is
+  UserDefaults, through the shared app group: IslandCatalog reads what the app
+  wrote there so the Dynamic Island has something to show. CA92.1 is exactly
+  that case — a group container shared between an app and its extension.
+
+  Nothing is collected and nothing is tracked, here or in the app.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyTracking</key>
+	<false/>
+</dict>
+</plist>

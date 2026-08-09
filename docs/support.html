@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support — travelet</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #1c1c1e;
+    --quiet: #6b6b70;
+    --rule: rgba(60, 60, 67, 0.14);
+    --paper: #f7f4ee;
+    --card: #fffdf9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #ece8e1;
+      --quiet: #9b968e;
+      --rule: rgba(255, 255, 255, 0.14);
+      --paper: #17161a;
+      --card: #1e1d22;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 20px 72px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    padding: 32px 28px;
+  }
+  h1 { font-size: 26px; letter-spacing: -0.4px; margin: 0 0 4px; }
+  h2 { font-size: 16px; letter-spacing: -0.1px; margin: 30px 0 8px; }
+  .lede {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--quiet);
+    margin: 0 0 8px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  p { margin: 0 0 12px; }
+  ol, ul { margin: 0 0 12px; padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  a { color: inherit; }
+  .contact {
+    margin-top: 32px;
+    padding: 16px 18px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+  }
+  .contact p { margin: 0; }
+  footer {
+    max-width: 640px;
+    margin: 20px auto 0;
+    color: var(--quiet);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>travelet — Support</h1>
+  <p class="lede">
+    A wallet for the paperwork of a trip: passports, boarding passes, visas,
+    insurance, and whatever else you need to be able to find in an airport.
+  </p>
+
+  <h2>Adding a document</h2>
+  <ol>
+    <li>Scroll to the category you want — passports, flight tickets, visas,
+        insurances, declarations, or a folder of your own.</li>
+    <li>Tap it to open it.</li>
+    <li>Tap the blank sheet at the end of the row.</li>
+    <li>Pick a PDF from Files, iCloud Drive, or anywhere else your phone can
+        reach. It is copied into travelet and kept on your device.</li>
+  </ol>
+
+  <h2>Opening and closing things</h2>
+  <p>
+    Tap a card to read the document full-screen. Tap the fingerprint print at the
+    bottom of an open object to close it.
+  </p>
+
+  <h2>Throwing a document out</h2>
+  <p>
+    Drag a card up or down out of its row. A red line appears where letting go
+    would throw the document away; go past it, let go, and travelet asks you once
+    to confirm. Confirming deletes travelet's copy for good.
+  </p>
+
+  <h2>Flight reminders</h2>
+  <p>
+    When you add a boarding pass, travelet reads the flight, gate, seat and times
+    out of the PDF and offers to remind you: the day before, three hours before
+    boarding, and half an hour before. The reminders are scheduled on your phone
+    and delivered by your phone — nothing is sent anywhere.
+  </p>
+  <p>
+    To turn them off, open <strong>Settings → Notifications → travelet</strong> on
+    your device. Deleting a boarding pass removes its reminders too.
+  </p>
+
+  <h2>Setting your country</h2>
+  <p>
+    travelet asks which country you are from the first time you open it. That
+    choice only decides which country is lit on the passport cover's map, and it
+    stays on your device.
+  </p>
+
+  <h2>Your privacy</h2>
+  <p>
+    travelet makes no network connections at all. Nothing you put in it leaves
+    your phone. The full policy is on the
+    <a href="./privacy.html">privacy page</a>.
+  </p>
+
+  <h2>Something wrong?</h2>
+  <p>
+    If a boarding pass is not read correctly, it helps enormously to know which
+    airline issued it and what language it is in — the layouts differ a great
+    deal between them.
+  </p>
+
+  <div class="contact">
+    <p>
+      <strong>Get in touch:</strong>
+      <a href="mailto:desarrollos.hermanos@gmail.com">desarrollos.hermanos@gmail.com</a>
+    </p>
+  </div>
+</main>
+<footer>travelet — a personal travel wallet</footer>
+</body>
+</html>
